@@ -9,7 +9,7 @@ library(dplyr)
 library(ggplot2)
 
 #Import data into a new data frame
-MasterData<-read.csv("Metacognitive Skills - Clean.csv")
+MasterData<-read.csv("~/downloads/Data Summary_CLEAN.csv")
 
 #Shorten column names
 colnames(MasterData)<-c("ID","Sex","Background","CA", "CU", "IA", "IU")
