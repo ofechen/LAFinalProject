@@ -10,21 +10,23 @@ library(ggplot2)
 
 #Import data into a new data frame
 MasterData<-read.csv("~/downloads/Data Summary_CLEAN.csv")
+#eliminating redundant columns
+MasterData<-MasterData[,1:12]
+#Changing column names
+names(MasterData) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Timw_hm","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS")
 
-#Shorten column names
-colnames(MasterData)<-c("ID","Sex","Background","CA", "CU", "IA", "IU")
 ```
 
 ```{r}
 #Examine scatter plots for different variable combination pairs
 #Linguistic Background & Correct, Aware
-ggplot(MasterData, aes(Background,CA))+ geom_point() + stat_sum(aes(group = 1))
+ggplot(MasterData, aes(Language,Per_correct))+ geom_point() + stat_sum(aes(group = 1))
 
 #Linguistic Background & Incorrect, Aware
-ggplot(MasterData, aes(Background,IA))+ geom_point() + stat_sum(aes(group = 1))
+ggplot(MasterData, aes(Language,Per_aware))+ geom_point() + stat_sum(aes(group = 1))
 
-#Linguistic Background & Incorrect, Unaware
-ggplot(MasterData, aes(Background,IU))+ geom_point() + stat_sum(aes(group = 1))
+#Creating scatter plots for all pairs
+pairs(MasterData)
 ```
 
 ```{r}
