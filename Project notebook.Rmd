@@ -9,7 +9,7 @@ library(dplyr)
 library(ggplot2)
 
 #Import data into a new data frame
-MasterData<-read.csv("Data Summary_CLEAN.csv")
+MasterData<-read.csv("~/downloads/Data Summary_CLEAN.csv")
 #eliminating redundant columns
 MasterData<-MasterData[,1:12]
 #Changing column names
@@ -45,10 +45,10 @@ ggplot(MasterData, aes(IU,Time_hw))+ geom_point() + stat_sum(aes(group = 1))
 
 ```{r}
 #Create new data frame for scaled data, removing non-clustering variables
-ScaledData<-as.data.frame(scale(select(MasterData, Final_grade:Per_complete_LS)))
+ScaledData<-as.data.frame(cbind(MasterData[,1:3],scale(select(MasterData, Final_grade:Per_complete_LS))))
 #Calculate Mean and Standard Deviation for scaled data
-sapply(ScaledData, mean)
-sapply(ScaledData, sd)
+sapply(ScaledData[,4:12], mean)
+sapply(ScaledData[,4:12], sd)
 ```
 
 ```{r}
@@ -62,7 +62,7 @@ wssplot <- function(data, nc=15, seed=1234){
        ylab="Within groups sum of squares")}
 
 #Create the WSS Graph
-wssplot(ScaledData,nc=15,seed=1234)
+wssplot(ScaledData[,4:12],nc=15,seed=1234)
 ```
 ```{r}
 #Create and examine several different possible cluster solutions
