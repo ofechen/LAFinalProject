@@ -9,9 +9,16 @@ library(dplyr)
 library(ggplot2)
 
 #Import data into a new data frame
-MasterData<-read.csv("~/downloads/Data Summary_CLEAN.csv")
+MasterData<-read.csv("~/downloads/FRE1120 Data Summary - RAW.csv")
+#Removing students that were not required to do the LS exercises
+MasterData<-MasterData[MasterData$LS.Required=="y",]
+#Removing the few students with linguistic background different than English, Spnaish, or Creole due to very low numbers
+MasterData<-MasterData[MasterData$Linguistic.Background %in% c("English","Creole","Spanish"),]
+#Creating the calculated fields of Per_aware and Per_correct
+MasterData <- MasterData %>% mutate(Per_correct = Correct...aware+Correct...unaware)
+MasterData <- MasterData %>% mutate(Per_aware = Correct...aware+Incorrect...aware)
 #eliminating redundant columns
-MasterData<-MasterData[,1:12]
+MasterData<- select(MasterData, "ID..","Sex","Linguistic.Background","Final.Grade","Incorrect...unaware","Per_correct","Per_aware","Time.Spent..HW.","Time.Spent..Pronunciation.Practice.","Time.Spent..LearnSmart.","Total.HW...Correct","Total.LS...Complete")
 #Changing column names
 names(MasterData) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS")
 
@@ -46,7 +53,7 @@ ggplot(MasterData, aes(IU,Time_hw))+ geom_point() + stat_sum(aes(group = 1))
 ```{r}
 #Create new data frame for scaled data, removing non-clustering variables
 ScaledData<-as.data.frame(cbind(MasterData[,1:3],scale(select(MasterData, Final_grade:Per_complete_LS))))
-#Calculate Mean and Standard Deviation for scaled data
+#Validating scaling by looking at means and standard deviations of the scaled columns
 sapply(ScaledData[,4:12], mean)
 sapply(ScaledData[,4:12], sd)
 ```
