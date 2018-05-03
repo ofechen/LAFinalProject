@@ -18,7 +18,7 @@ MasterData<-MasterData[MasterData$Linguistic.Background %in% c("English","Creole
 MasterData <- MasterData %>% mutate(Per_correct = Correct...aware+Correct...unaware)
 MasterData <- MasterData %>% mutate(Per_aware = Correct...aware+Incorrect...aware)
 #eliminating redundant columns
-MasterData<- select(MasterData, "ID..","Sex","Linguistic.Background","Final.Grade","Incorrect...unaware","Per_correct","Per_aware","Time.Spent..HW.","Time.Spent..Pronunciation.Practice.","Time.Spent..LearnSmart.","Total.HW...Correct","Total.LS...Complete")
+MasterData<- select(MasterData, "ID..","Sex","Linguistic.Background","Final.Grade","Incorrect...unaware","Per_correct","Per_aware","Time.Spent..HW.","Time.Spent..Pronunciation.Practice.","Time.Spent..LearnSmart.","Total.HW...Correct","Total.LS...Complete",)
 #Changing column names
 names(MasterData) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS")
 
@@ -80,48 +80,57 @@ fourclusterkmeans
 ```
 ```{r}
 #Assign the clusters for each observation for k=3,4 to a new dataframe
-Clusters<-data.frame(ScaledData, threeclusterkmeans$cluster, fourclusterkmeans$cluster)
+Clusters<-data.frame(ScaledData, as.factor(threeclusterkmeans$cluster), as.factor(fourclusterkmeans$cluster))
+names(Clusters) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS","ClusterToThree","ClusterToFour")
 ```
 
 ```{r}
 #Graph the different solutions - Three Clusters.
 #Shapes indicate Language Background. To change which variable is marked by shape, change the name of the variable in "shape=Language"
-ggplot(Clusters, aes(Time_hw,Per_correct_hw, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(Time_hw,Time_LS, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_correct_hw,Final_grade, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_correct,Per_aware, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_complete_LS,Final_grade, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Final_grade, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Time_LS, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Time_hw, group = factor(threeclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(threeclusterkmeans.cluster))))
+ggplot(Clusters, aes(Time_hw,Per_correct_hw, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(Time_hw,Time_LS, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(Per_correct_hw,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(Per_correct,Per_aware, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(Per_complete_LS,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(IU,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(IU,Time_LS, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
+ggplot(Clusters, aes(IU,Time_hw, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
 ```
 
 ```{r}
 #Graph the different solutions - Four Clusters.
 #Shapes indicate Language Background. To change which variable is marked by shape, change the name of the variable in "shape=Language
-ggplot(Clusters, aes(Time_hw,Per_correct_hw, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(Time_hw,Time_LS, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_correct_hw,Final_grade, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_correct,Per_aware, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_complete_LS,Final_grade, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Final_grade, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Time_LS, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Time_hw, group = factor(fourclusterkmeans.cluster))) + geom_point((aes(size=2,shape=Language, color = factor(fourclusterkmeans.cluster))))
+ggplot(Clusters, aes(Time_hw,Per_correct_hw, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(Time_hw,Time_LS, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(Per_correct_hw,Final_grade, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(Per_correct,Per_aware, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(Per_complete_LS,Final_grade, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(IU,Final_grade, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(IU,Time_LS, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
+ggplot(Clusters, aes(IU,Time_hw, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
 ```
+
+
+
 ```{r}
-#Graph the different solutions - Five Clusters.
-#Shapes indicate Language Background. To change which variable is marked by shape, change the name of the variable in "shape=Language
-ggplot(Clusters, aes(Time_hw,Per_correct_hw, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(Time_hw,Time_LS, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_correct_hw,Final_grade, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_correct,Per_aware, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_complete_LS,Final_grade, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Final_grade, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Time_LS, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
-ggplot(Clusters, aes(IU,Time_hw, group = factor(fiveclusterkmeans.cluster))) + geom_point((aes(shape=Language, color = factor(fiveclusterkmeans.cluster))))
+#Descriptive stats for each cluster in the 4 cluster solution
+UnscaledClusters<-data.frame(MasterData, as.factor(threeclusterkmeans$cluster), as.factor(fourclusterkmeans$cluster))
+names(UnscaledClusters) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS","ClusterToThree","ClusterToFour")
+#creating languages vector and language count df
+langs <- c("English","Spanish","Creole")
+LangsCount <- data.frame(cluster1count=integer(), cluster2count=integer(), cluster3count=integer(), cluster4count=integer(), stringsAsFactors=TRUE)
+
+for (j in langs) {
+    LangsCount[j,1] <- j
+    for (i in 1:4){
+      LangsCount[j,i] <- sum(UnscaledClusters$Language==j & UnscaledClusters$ClusterToFour==i)
+}
+}
+```
+
+
+
