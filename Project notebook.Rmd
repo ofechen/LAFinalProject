@@ -2,7 +2,29 @@
 title: "R Notebook"
 output: html_notebook
 ---
-  
+
+
+## Data Cleaning
+
+We didn't have a lot of cleaning work to do due to the format in which we received the data.
+
+***
+
+Filtering:
+
+* We removed students not required to tdo the online activies to compare students who had the same course requirements.
+* We predicted that libguistic background would play a significant role in the behaviors and outcomes measured in our analysis and therefore focused only on English, Spanish, and French Creole speaking students. Three students with Chinese and French background were filtered as well.
+
+***
+
+Calculated variables:
+
+* We created Per_correct by adding percent correct and aware and percent correct and unaware.
+* We created Per_aware by adding percent correct and aware and percent incorrect and aware.
+
+***
+For ease of use, we removed unnecessary columns and renamed columns.
+ 
 ```{r}
 #load relevant libraries
 library(dplyr)
@@ -23,6 +45,42 @@ MasterData<- select(MasterData, "ID..","Sex","Linguistic.Background","Final.Grad
 names(MasterData) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS")
 
 ```
+
+## Variable exploration
+
+We started looking at the relationships between our variables using the R 'pairs' function.
+We then focused on specific pairs of variables and made note of interesting or unexpected relationships.
+
+***
+
+### Expected relationships between variables
+Some intuitive relationships between variables were evident in the data:
+
+***
+
+* Time spent on homework is correlated with percent of correct homework answers. Yet, it seems that there is a significant portion of students who get better return on their time investment than others which may indicate that other factors are involved in being correct on homework question and not just time. 
+* Time spent on homework and time spent on Learn Smart (LS) are correlated as expected. Those who spent little time on one are likely to spend little time on the other.
+* Percent correct on homework assignments is correlated with higher final grade. People who succeed in one are likely to succeed int he other.
+* Perhaps the most salient correlation was found between percent of correct answers on LS and percent of correctly noting whether you know the answer or not. This was hypothesized before the analysis phase by the group as a potential obstacle for struggling students: not being aware of their weak spots. This correlation provides a fertile ground for further analysis and suggests potential avenues for Trent to support those students.
+
+
+### Surprising relationships or non-relationships between variables
+
+Some intuitive relationships did not pan out as predicted by the group:
+
+***
+
+* Percent completion of the Learn Smart activities was correlated with final grade, but, the range of grades even for those completing 100% of the activities was very wide. This might give indication to the effectivity of the LS system.
+
+* Percent complete of the Learn Smart activities seemed to *not* correlate with being incorrect and unaware. We had predicted that the more practice you get the more aware you will be about what you know and don't know. Apparently there may be more factors at play. One of them might be a growing sense of confidence that leads students to mark "I know the answer" more as time goes by, increasing the chances of being incoreect and unaware whenever they make a mistake. Another could be related to questions getting harder.
+
+* Overall time spent on LS increases the percent of incorrect and unaware answers. This is counter to our predictions and may be for the same reasons as the previous bullet point.
+
+* Time spent on LS and final grade are positively correlated, yet, there is a significant portion of students that spent very little time on the system and still received a high grade.
+
+* Being incorrect and unaware does not seem to correlate strongly with final grades. This is a good point for investigation after the clustering phase is done.
+
+***
 
 ```{r}
 #Examine scatter plots for different variable combination pairs
@@ -48,9 +106,12 @@ ggplot(MasterData, aes(Time_LS,Final_grade))+ geom_point() + stat_sum(aes(group 
 ggplot(MasterData, aes(IU,Final_grade))+ geom_point() + stat_sum(aes(group = 1))
 #Percentage of incorrect and unaware LearnSmart responses, Time spent on LearnSmart adaptive activities
 ggplot(MasterData, aes(IU,Time_LS))+ geom_point() + stat_sum(aes(group = 1))
-#Percentage of incorrect and unaware LearnSmart responses, Time spent on Connect homework
-ggplot(MasterData, aes(IU,Time_hw))+ geom_point() + stat_sum(aes(group = 1))
 ```
+
+## Scaling the Data
+
+We scaled the model variables and created a new data frame for clustering. 
+We made sure that the variables were scaled as expected (mean = 0, sd = 1).
 
 ```{r}
 #Create new data frame for scaled data, removing non-clustering variables
@@ -59,6 +120,12 @@ ScaledData<-as.data.frame(cbind(MasterData[,1:3],scale(select(MasterData, Final_
 sapply(ScaledData[,4:12], mean)
 sapply(ScaledData[,4:12], sd)
 ```
+
+## Determining the Number of Meaningful Clusters
+
+We started our by creating a wss plot. The results showed promise for a 3 or 5 cluster solutions.
+We used the kmeans model to explore 3, 4, or 5 cluster solutions.
+
 
 ```{r}
 #Creating the Within Group Sum of Squares function
@@ -73,33 +140,64 @@ wssplot <- function(data, nc=15, seed=1234){
 #Create the WSS Graph
 wssplot(ScaledData[,4:12],nc=15,seed=1234)
 ```
+### Model outcomes
+
+* __Three Clusters:__
+
+Reviewing the outcomes from the 3 models raised some issues we needed to address. The three cluster solution painted  apicture in which 2 clusters are doing well, while one smaller cluster contained students who seemed not to engage with the course online materials. This seemed too simplistic (either you're not working enough or you are doing just fine). Trent knows he has students engaging with the course that do not achieve the same final outcomes as others, especially when comparing the time they work on their assignments to the time spent by other students. We decided that a 3 cluster solution would not be meaningful enough for Trent.
+
+***
+
 ```{r}
 #Create and examine several different possible cluster solutions
 threeclusterkmeans<-kmeans(ScaledData[,4:12], 3, nstart=10)
 threeclusterkmeans
+```
+
+* __Five Clusters:__
+
+We moved on to look at the second promising point. In this case, we receive two very small clusters of only 8 students.
+The added information from having another cluster was separating the very strong students in the class from the students doing well.   For the purposes of this project, we found this result not to be useful for Trent's goals and therefore decided that the added granularity only serves to complicate the analysis and our results.
+
+***
+
+```{r}
+fiveclusterkmeans<-kmeans(ScaledData[,4:12], 5, nstart=10)
+fiveclusterkmeans
+```
+
+
+* __Four Clusters:__
+Even though at first it did not seem like the best clustering solutions, the four cluster solution gives us an interesting view of Trent's classes and points out to a few meaningful student personas. Those personas might be characterized as:
+    + __Average effort / average outcome__ (Cluster 1 centroid) - These students are the largest cluster and as such such they are also pretty much average on most of the dimensions we chose for the model. 
+    + __Low effort/high outcome__ (Cluster 2 centroid) - These students are the second largest cluster in this analysis. Their final grades are typically higher, yet they spend less time than other clusters on activities. For example, they complete more of the LS activities in less time than clusters 1 and 3. They also spent less time on homework than clusters 1 and 3 to achieve higher correct rate on those questions.
+    + __High effort/ low outcome__ (Cluster 3 centorid) - These students seems to have a harder time in this course than others. They typically spend a lot more time on assignments yet get lower grades for them. An interesting point is that this group is also a lot more incorrect and unaware than all other groups. This may be an indication of a potential gap between what they know and what they think they know.
+    + __Low effort/ low outcome__ (Cluster 4 centroid) - Students within this cluster are typically not engaged with the courses online material, complete very few LS activities, which results in very low final grades. If Trent wants to address the needs of those students, he will have to take a different approach than the one he will use to address the needs of students in cluster 3.
+
+
+
+***
+
+```{r}
 fourclusterkmeans<-kmeans(ScaledData[,4:12], 4, nstart=10)
 fourclusterkmeans
 ```
+
+## Visualizing the Clusters
+
+### Assigning observations to Clusters
+
 ```{r}
 #Assign the clusters for each observation for k=3,4 to a new dataframe
 Clusters<-data.frame(ScaledData, as.factor(threeclusterkmeans$cluster), as.factor(fourclusterkmeans$cluster))
 names(Clusters) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS","ClusterToThree","ClusterToFour")
 ```
 
-```{r}
-#Graph the different solutions - Three Clusters.
-#Shapes indicate Language Background. To change which variable is marked by shape, change the name of the variable in "shape=Language"
-ggplot(Clusters, aes(Time_hw,Per_correct_hw, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(Time_hw,Time_LS, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(Per_correct_hw,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(Per_correct,Per_aware, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(Per_complete_LS,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(IU,Final_grade, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(IU,Time_LS, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-ggplot(Clusters, aes(IU,Time_hw, group = factor(ClusterToThree))) + geom_point((aes(shape=Language, color = factor(ClusterToThree))))
-```
+### Going Back to the Variables
+
+We went back to the visualizaitons we started with.  
+This second round includes cluster information, so we can now see how the clusters differ on those dimensions of interest.
+
 
 ```{r}
 #Graph the different solutions - Four Clusters.
@@ -113,26 +211,30 @@ ggplot(Clusters, aes(Per_complete_LS,IU, group = factor(ClusterToFour))) + geom_
 ggplot(Clusters, aes(Time_LS,Final_grade, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
 ggplot(Clusters, aes(IU,Final_grade, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
 ggplot(Clusters, aes(IU,Time_LS, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
-ggplot(Clusters, aes(IU,Time_hw, group = factor(ClusterToFour))) + geom_point((aes(size=2,shape=Language, color = factor(ClusterToFour))))
 ```
+
+
+##Cluster Statistics  Demographic Analysis
+We wanted to review the actual values of the cluster centroids and not just the scaled values.
 
 
 
 ```{r}
-#Descriptive stats for each cluster in the 4 cluster solution
+
+# Adding the clusters to the unscaled df
 UnscaledClusters<-data.frame(MasterData, as.factor(threeclusterkmeans$cluster), as.factor(fourclusterkmeans$cluster))
 names(UnscaledClusters) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS","ClusterToThree","ClusterToFour")
-#creating languages vector and language count df
-langs <- c("English","Spanish","Creole")
-LangsCount <- data.frame(cluster1count=integer(), cluster2count=integer(), cluster3count=integer(), cluster4count=integer(), stringsAsFactors=TRUE)
+```
 
-for (j in langs) {
-    LangsCount[j,1] <- j
-    for (i in 1:4){
-      LangsCount[j,i] <- sum(UnscaledClusters$Language==j & UnscaledClusters$ClusterToFour==i)
-}
-}
-LangsCount
+In addition, we wanted to see if some populations are over-represented in some of the clusters.
+
+```{r}
+#creating languages vector and proportion tables for both demogrpahic variables
+langs <- c("English","Spanish","Creole")
+prop.table(Langstable <- table(Clusters$Language,Clusters$ClusterToFour),1)[c(2,3,6),] # within language cluster proportion
+prop.table(Langstable <- table(Clusters$Language,Clusters$ClusterToFour),2)[c(2,3,6),] # within cluster language proportion
+prop.table(Langstable <- table(Clusters$Sex,Clusters$ClusterToFour),1) # within language cluster proportion
+prop.table(Langstable <- table(Clusters$Sex,Clusters$ClusterToFour),2) # within cluster language proportion
 ```
 
 
