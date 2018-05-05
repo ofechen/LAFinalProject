@@ -172,7 +172,7 @@ Even though at first it did not seem like the best clustering solutions, the fou
     + __Average effort / average outcome__ (Cluster 1 centroid) - These students are the largest cluster and as such such they are also pretty much average on most of the dimensions we chose for the model. 
     + __Low effort/high outcome__ (Cluster 2 centroid) - These students are the second largest cluster in this analysis. Their final grades are typically higher, yet they spend less time than other clusters on activities. For example, they complete more of the LS activities in less time than clusters 1 and 3. They also spent less time on homework than clusters 1 and 3 to achieve higher correct rate on those questions.
     + __High effort/ low outcome__ (Cluster 3 centorid) - These students seems to have a harder time in this course than others. They typically spend a lot more time on assignments yet get lower grades for them. An interesting point is that this group is also a lot more incorrect and unaware than all other groups. This may be an indication of a potential gap between what they know and what they think they know.
-    + __Low effort/ low outcome__ (Cluster 4 centroid) - Students within this cluster are typically not engaged with the courses online material, complete very few LS activities, which results in very low final grades. If Trent wants to address the needs of those students, he will have to take a different approach than the one he will use to address the needs of students in cluster 3.
+    + __Very low effort/ very low outcome__ (Cluster 4 centroid) - Students within this cluster are typically not engaged with the courses online material, complete very few LS activities, which results in very low final grades. If Trent wants to address the needs of those students, he will have to take a different approach than the one he will use to address the needs of students in cluster 3.
 
 
 
@@ -215,26 +215,53 @@ ggplot(Clusters, aes(IU,Time_LS, group = factor(ClusterToFour))) + geom_point((a
 
 
 ##Cluster Statistics  Demographic Analysis
+
+***
+
 We wanted to review the actual values of the cluster centroids and not just the scaled values.
 
-
-
+***
 ```{r}
 
 # Adding the clusters to the unscaled df
 UnscaledClusters<-data.frame(MasterData, as.factor(threeclusterkmeans$cluster), as.factor(fourclusterkmeans$cluster))
 names(UnscaledClusters) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS","ClusterToThree","ClusterToFour")
+MeanTable <- data.frame("Final_grade"=double(),"IU"=double(),"Per_correct"=double(),"Per_aware"=double(),"Time_hw"=double(),"Time_pron"=double(),"Time_LS"=double(),"Per_correct_hw"=double(),"Per_complete_LS"=double())
+MeanTable
+```
+
+```{r}
+for (i in 1:4){
+    MeanTable [i,1]<- mean(UnscaledClusters$Final_grade[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,2]<- mean(UnscaledClusters$IU[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,3]<- mean(UnscaledClusters$Per_correct[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,4]<- mean(UnscaledClusters$Per_aware[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,5]<- mean(UnscaledClusters$Time_hw[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,6]<- mean(UnscaledClusters$Time_pron[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,7]<- mean(UnscaledClusters$Time_LS[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,8]<- mean(UnscaledClusters$Per_correct_hw[UnscaledClusters$ClusterToFour==i])
+    MeanTable [i,9]<- mean(UnscaledClusters$Per_complete_LS[UnscaledClusters$ClusterToFour==i])
+}
+MeanTable
 ```
 
 In addition, we wanted to see if some populations are over-represented in some of the clusters.
 
+***
+
+Within the 2 clusters that need more attention (very low effort/very low outcome and high effort/low outcome) no one population stands out as being more likely to be present. Students with spanish backgrounds in this sample were less likely to be in the high effort/low outcome cluster (9.4%) than English (15.8%) or French-Creole (17.6%) speaking students. 
+
+The differences in the Very low effort/ very low outcome seem marginal.
+
+Sex also did not affect the low outcome cluster distribution in a meaningful way.
+
 ```{r}
 #creating languages vector and proportion tables for both demogrpahic variables
 langs <- c("English","Spanish","Creole")
-prop.table(Langstable <- table(Clusters$Language,Clusters$ClusterToFour),1)[c(2,3,6),] # within language cluster proportion
-prop.table(Langstable <- table(Clusters$Language,Clusters$ClusterToFour),2)[c(2,3,6),] # within cluster language proportion
-prop.table(Langstable <- table(Clusters$Sex,Clusters$ClusterToFour),1) # within language cluster proportion
-prop.table(Langstable <- table(Clusters$Sex,Clusters$ClusterToFour),2) # within cluster language proportion
+prop.table(table(Clusters$Language,Clusters$ClusterToFour),1)[c(2,3,6),] # within language cluster proportion
+prop.table(table(Clusters$Language,Clusters$ClusterToFour),2)[c(2,3,6),] # within cluster language proportion
+prop.table(table(Clusters$Sex,Clusters$ClusterToFour),1) # within language cluster proportion
+prop.table(table(Clusters$Sex,Clusters$ClusterToFour),2) # within cluster language proportion
 ```
 
 
