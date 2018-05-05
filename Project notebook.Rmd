@@ -33,6 +33,8 @@ ggplot(MasterData, aes(Time_hw,Per_correct_hw))+ geom_point() + stat_sum(aes(gro
 #Time spent on Connect homework, Time spent on LearnSmart adaptive activities
 ggplot(MasterData, aes(Time_hw,Time_LS))+ geom_point() + stat_sum(aes(group = 1))
 #Percentage of correct homework responses, Final course grade
+ggplot(MasterData, aes(Per_aware,Final_grade))+ geom_point() + stat_sum(aes(group = 1))
+#Percentage of correct homework responses, Final course grade
 ggplot(MasterData, aes(Per_correct_hw,Final_grade))+ geom_point() + stat_sum(aes(group = 1))
 #Percentage of correct LearnSmart responses, Percentage of awareness of correct/incorrect responses
 ggplot(MasterData, aes(Per_correct,Per_aware))+ geom_point() + stat_sum(aes(group = 1))
@@ -130,6 +132,7 @@ for (j in langs) {
       LangsCount[j,i] <- sum(UnscaledClusters$Language==j & UnscaledClusters$ClusterToFour==i)
 }
 }
+LangsCount
 ```
 
 
