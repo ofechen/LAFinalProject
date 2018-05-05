@@ -221,14 +221,18 @@ ggplot(Clusters, aes(IU,Time_LS, group = factor(ClusterToFour))) + geom_point((a
 We wanted to review the actual values of the cluster centroids and not just the scaled values.
 
 ***
+
 ```{r}
 
 # Adding the clusters to the unscaled df
 UnscaledClusters<-data.frame(MasterData, as.factor(threeclusterkmeans$cluster), as.factor(fourclusterkmeans$cluster))
 names(UnscaledClusters) <- c("ID","Sex","Language","Final_grade","IU","Per_correct","Per_aware","Time_hw","Time_pron","Time_LS","Per_correct_hw","Per_complete_LS","ClusterToThree","ClusterToFour")
 MeanTable <- data.frame("Final_grade"=double(),"IU"=double(),"Per_correct"=double(),"Per_aware"=double(),"Time_hw"=double(),"Time_pron"=double(),"Time_LS"=double(),"Per_correct_hw"=double(),"Per_complete_LS"=double())
-MeanTable
+row.names(MeanTable) <- c("Cluster 1","Cluster 2","Cluster 3","Cluster 4")
 ```
+
+From analyzing the unscaled means we get a stronger sense of the differences between the clusters.
+
 
 ```{r}
 for (i in 1:4){
