@@ -308,9 +308,10 @@ The sample contains a ~2:1 ratio of females to males, thus sex does not appear t
 ***
 
 ## 5) Conclusion
-
+Based on our analysis, the answer to the question we have asked is yes, student practice behaviors and performance outcomes from the textbook's online workbook can be used to meaningfully group students. We also feel that given the specific variables we used to answer our question, we were able to identify the challenges that different student groups face. Therefore, the data and our analysis can provide insights into possible actionable steps Trent could take to help each student group. We are confident in the analysis we conducted but, also do recognize that the online workbook activities only make up for 25% of the course grade and therefore, we could be missing other important pieces of the puzzle. Within different student groups, there might be multiple reasons for low motivation or low grades. We would have to go deeper in to other aspects of student behavior such as class participation and other assignment grades for a more refined conclusion.
 ***
 
 ## 6) Reflection
-
-
+One of the challenges we encountered was narrowing down on questions that would provide Trent with meaningful insights to help his students, in future courses. The breadth of data that was available required us to take a decision very early on about which variables we wish to include in our analysis, to avoid downloading and cleaning data that would not help in answering our questions. 
+We mostly relied on each other's strenghts for help, with team members who have stronger R skills helping those who were struggling with coding.
+If we had more time to keep working on the project we would probably conduct a wider analysis, incorporating additional variables to help paint a more holistic picture of the students and their learning behaviors.
